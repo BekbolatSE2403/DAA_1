@@ -1,6 +1,5 @@
-package org.example;
+package org.example.algorithms;
 
-import org.example.algorithms.QuickSort;
 import org.example.metrics.AlgorithmMetrics;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
@@ -54,9 +53,8 @@ public class QuickSortTest {
         // For n=10000, depth should be ~2*log2(10000) ≈ 26-30
         int maxExpectedDepth = (int) (2.5 * (Math.log(arr.length) / Math.log(2)));
         assertTrue(metrics.getMaxRecursionDepth() <= maxExpectedDepth,
-                "Recursion depth should be bounded by O(log n)");
-        System.out.println("QuickSort depth: " + metrics.getMaxRecursionDepth() +
-                ", expected <= " + maxExpectedDepth);
+                "Recursion depth should be bounded by O(log n). Got: " +
+                        metrics.getMaxRecursionDepth() + ", expected <= " + maxExpectedDepth);
     }
 
     @Test
@@ -78,6 +76,11 @@ public class QuickSortTest {
         int[] sorted = {1, 2, 3, 4, 5};
         sorter.sort(sorted);
         assertArrayEquals(new int[]{1, 2, 3, 4, 5}, sorted);
+
+        // All equal elements
+        int[] equal = {5, 5, 5, 5, 5};
+        sorter.sort(equal);
+        assertArrayEquals(new int[]{5, 5, 5, 5, 5}, equal);
     }
 
     private boolean isSorted(int[] arr) {

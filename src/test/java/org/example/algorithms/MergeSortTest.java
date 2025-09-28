@@ -1,6 +1,5 @@
-package org.example;
+package org.example.algorithms;
 
-import org.example.algorithms.MergeSort;
 import org.example.metrics.AlgorithmMetrics;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
@@ -47,9 +46,9 @@ public class MergeSortTest {
 
         // For n=1000, depth should be ~log2(1000) ≈ 10
         int expectedDepth = (int) (Math.log(arr.length) / Math.log(2)) + 2;
-        assertTrue(metrics.getMaxRecursionDepth() <= expectedDepth);
-        System.out.println("MergeSort depth: " + metrics.getMaxRecursionDepth() +
-                ", expected ~" + expectedDepth);
+        assertTrue(metrics.getMaxRecursionDepth() <= expectedDepth,
+                "MergeSort depth: " + metrics.getMaxRecursionDepth() +
+                        ", expected ~" + expectedDepth);
     }
 
     @Test
@@ -71,5 +70,24 @@ public class MergeSortTest {
         int[] two = {2, 1};
         sorter.sort(two);
         assertArrayEquals(new int[]{1, 2}, two);
+
+        // Already sorted (tests the skip merge optimization)
+        int[] sorted = {1, 2, 3, 4, 5};
+        metrics.reset();
+        sorter.sort(sorted);
+        assertArrayEquals(new int[]{1, 2, 3, 4, 5}, sorted);
+    }
+
+    @Test
+    public void testReusableBuffer() {
+        // Test that the algorithm works correctly with reusable buffer
+        int[] arr = {9, 8, 7, 6, 5, 4, 3, 2, 1};
+        int[] expected = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+        AlgorithmMetrics metrics = new AlgorithmMetrics();
+        MergeSort sorter = new MergeSort(metrics);
+        sorter.sort(arr);
+
+        assertArrayEquals(expected, arr);
     }
 }
