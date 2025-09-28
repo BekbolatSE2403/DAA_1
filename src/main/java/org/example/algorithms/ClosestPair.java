@@ -6,10 +6,37 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 public class ClosestPair {
-    private AlgorithmMetrics metrics;
+    private final AlgorithmMetrics metrics;
 
     public ClosestPair(AlgorithmMetrics metrics) {
         this.metrics = metrics;
+    }
+
+    public static class Point {
+        public final double x;
+        public final double y;
+
+        public Point(double x, double y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public double distanceTo(Point other) {
+            double dx = this.x - other.x;
+            double dy = this.y - other.y;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        public double distanceSquaredTo(Point other) {
+            double dx = this.x - other.x;
+            double dy = this.y - other.y;
+            return dx * dx + dy * dy;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("(%.2f, %.2f)", x, y);
+        }
     }
 
     public static class Pair {
@@ -37,10 +64,8 @@ public class ClosestPair {
         metrics.startTimer();
         RecursionDepthTracker.reset();
         try {
-
             Point[] pointsByX = points.clone();
             Point[] pointsByY = points.clone();
-
 
             Arrays.sort(pointsByX, Comparator.comparingDouble(p -> p.x));
             Arrays.sort(pointsByY, Comparator.comparingDouble(p -> p.y));
@@ -62,10 +87,8 @@ public class ClosestPair {
                 return bruteForceClosestPair(pointsByX, left, right);
             }
 
-
             int mid = left + (right - left) / 2;
             Point midPoint = pointsByX[mid];
-
 
             Point[] leftPointsY = new Point[mid - left + 1];
             Point[] rightPointsY = new Point[right - mid];
@@ -84,19 +107,16 @@ public class ClosestPair {
                 }
             }
 
-
             Pair leftClosest = findClosestPair(pointsByX, leftPointsY, left, mid);
             Pair rightClosest = findClosestPair(pointsByX, rightPointsY, mid + 1, right);
-
 
             Pair minPair = leftClosest;
             if (rightClosest.distance < minPair.distance) {
                 minPair = rightClosest;
             }
 
-
             double minDistance = minPair.distance;
-            Pair stripClosest = findClosestInStrip(pointsByY, midPoint, minDistance, left, right);
+            Pair stripClosest = findClosestInStrip(pointsByY, midPoint, minDistance);
 
             if (stripClosest != null && stripClosest.distance < minDistance) {
                 return stripClosest;
@@ -127,8 +147,7 @@ public class ClosestPair {
         return new Pair(p1, p2);
     }
 
-    private Pair findClosestInStrip(Point[] pointsByY, Point midPoint, double minDistance, int left, int right) {
-
+    private Pair findClosestInStrip(Point[] pointsByY, Point midPoint, double minDistance) {
         Point[] strip = new Point[pointsByY.length];
         int stripSize = 0;
 
@@ -138,7 +157,6 @@ public class ClosestPair {
                 strip[stripSize++] = p;
             }
         }
-
 
         double minStripDistance = minDistance;
         Pair closestStripPair = null;
@@ -158,7 +176,6 @@ public class ClosestPair {
 
         return closestStripPair;
     }
-
 
     public Pair bruteForce(Point[] points) {
         if (points.length < 2) {
