@@ -37,11 +37,11 @@ public class ClosestPair {
         metrics.startTimer();
         RecursionDepthTracker.reset();
         try {
-            // Create copies to preserve original order
+
             Point[] pointsByX = points.clone();
             Point[] pointsByY = points.clone();
 
-            // Pre-sort by x and y coordinates
+
             Arrays.sort(pointsByX, Comparator.comparingDouble(p -> p.x));
             Arrays.sort(pointsByY, Comparator.comparingDouble(p -> p.y));
 
@@ -58,16 +58,15 @@ public class ClosestPair {
         try {
             int n = right - left + 1;
 
-            // Base case: brute force for small sets
             if (n <= 3) {
                 return bruteForceClosestPair(pointsByX, left, right);
             }
 
-            // Divide: split into left and right halves
+
             int mid = left + (right - left) / 2;
             Point midPoint = pointsByX[mid];
 
-            // Create y-sorted arrays for left and right halves
+
             Point[] leftPointsY = new Point[mid - left + 1];
             Point[] rightPointsY = new Point[right - mid];
 
@@ -85,17 +84,17 @@ public class ClosestPair {
                 }
             }
 
-            // Conquer: recursively find closest pairs in halves
+
             Pair leftClosest = findClosestPair(pointsByX, leftPointsY, left, mid);
             Pair rightClosest = findClosestPair(pointsByX, rightPointsY, mid + 1, right);
 
-            // Find the minimum distance from both halves
+
             Pair minPair = leftClosest;
             if (rightClosest.distance < minPair.distance) {
                 minPair = rightClosest;
             }
 
-            // Combine: check points near the vertical line
+
             double minDistance = minPair.distance;
             Pair stripClosest = findClosestInStrip(pointsByY, midPoint, minDistance, left, right);
 
@@ -129,7 +128,7 @@ public class ClosestPair {
     }
 
     private Pair findClosestInStrip(Point[] pointsByY, Point midPoint, double minDistance, int left, int right) {
-        // Collect points within minDistance of the vertical line
+
         Point[] strip = new Point[pointsByY.length];
         int stripSize = 0;
 
@@ -140,14 +139,14 @@ public class ClosestPair {
             }
         }
 
-        // Check only the next 7 points for each point in the strip
+
         double minStripDistance = minDistance;
         Pair closestStripPair = null;
 
         for (int i = 0; i < stripSize; i++) {
             for (int j = i + 1; j < stripSize && (strip[j].y - strip[i].y) < minStripDistance; j++) {
                 metrics.recordComparison();
-                if (j - i > 7) break; // Geometric property: at most 7 points in this rectangle
+                if (j - i > 7) break;
 
                 double dist = strip[i].distanceSquaredTo(strip[j]);
                 if (dist < minStripDistance) {
@@ -160,7 +159,7 @@ public class ClosestPair {
         return closestStripPair;
     }
 
-    // Brute force method for validation (O(n^2))
+
     public Pair bruteForce(Point[] points) {
         if (points.length < 2) {
             throw new IllegalArgumentException("Need at least 2 points");
